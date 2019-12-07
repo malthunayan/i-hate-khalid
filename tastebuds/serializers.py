@@ -13,7 +13,11 @@ class VideoSerializer(serializers.ModelSerializer):
 
 	def get_owner(self, obj):
 		profile = obj.owner
-		return {"profile": profile.user.username, "points": profile.get_profile_points()}
+		return {
+			"id": profile.user.id,
+			"username": profile.user.username,
+			"points": profile.get_profile_points()
+		}
 
 	def get_votes(self, obj):
 		return obj.vote_count()
@@ -31,3 +35,9 @@ class VideoCreateSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Video
 		exclude = ('owner', 'votes')
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Profile
+		fields = '__all__'

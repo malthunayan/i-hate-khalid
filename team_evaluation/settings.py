@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'api',
     'corsheaders',
-    'tastebuds'
+    'tastebuds',
+    'banchar',
 ]
 
 MIDDLEWARE = [

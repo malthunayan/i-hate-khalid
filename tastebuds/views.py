@@ -1,6 +1,5 @@
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView, ListAPIView
 
@@ -16,7 +15,7 @@ class CategoryListView(ListAPIView):
 		return {'request': self.request, 'user': self.request.user, 'view': self}
 
 
-class VideoCreateView(ListAPIView):
+class VideoCreateView(CreateAPIView):
 	serializer_class = VideoCreateSerializer
 	permission_classes = (IsAuthenticated,)
 
@@ -33,3 +32,15 @@ class VoteView(APIView):
 			video_obj.votes.add(user)
 			return Response("Successfully voted bro")
 		return Response("Send a video id (as an integer) to vote bro")
+
+
+class ProfileView(APIView):
+	def get(self, request, profile_id):
+		queryset = Profile.objects.all().order_by('-points')
+		profile = Profile.objects.get(id=profile_id)
+		ranking = list(queryset).index(profile)
+		videos = profile.videos.values_list("youtube_url", flat=True)
+		return Response({
+			"username": profile.user.username, "points": profile.points,
+			"ranking": ranking, "videos": videos
+			})

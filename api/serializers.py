@@ -9,11 +9,12 @@ from .models import *
 
 class UserCreateSerializer(serializers.ModelSerializer):
 	password = serializers.CharField(write_only=True)
+	token = serializers.CharField(allow_blank=True, read_only=True)
 	access = serializers.CharField(allow_blank=True, read_only=True)
 
 	class Meta:
 		model = User
-		fields = ('username', 'password', 'access')
+		fields = ('username', 'password', 'token')
 
 	def create(self, validated_data):
 		username = validated_data['username']
@@ -23,6 +24,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
 		new_user.save()
 		payload = RefreshToken.for_user(new_user)
 		token = str(payload.access_token)
+		validated_data["token"] = token
 		validated_data["access"] = token
 		return validated_data
 
@@ -31,6 +33,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
 class UserLoginSerializer(serializers.Serializer):
 	username = serializers.CharField()
 	password = serializers.CharField(write_only=True)
+	token = serializers.CharField(allow_blank=True, read_only=True)
 	access = serializers.CharField(allow_blank=True, read_only=True)
 
 	def validate(self, attr):
@@ -51,6 +54,7 @@ class UserLoginSerializer(serializers.Serializer):
 			})
 		payload = RefreshToken.for_user(user_obj)
 		token = str(payload.access_token)
+		attr["token"] = token
 		attr["access"] = token
 		attr["username"] = user_obj.username
 		return attr

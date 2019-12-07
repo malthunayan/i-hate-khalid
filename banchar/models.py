@@ -26,6 +26,7 @@ class PickupRequest(models.Model):
 	winch = models.ForeignKey(
 		'Winch', related_name='pickup_requests', on_delete=models.CASCADE
 	)
+	requested_on = models.DateTimeField(auto_now_add=True)
 
 
 class Rating(models.Model):
